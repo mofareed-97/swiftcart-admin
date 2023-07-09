@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductValidator } from "@/lib/validation/product";
-import { FileWithPreview } from "@/types";
+import { CategoryType, FileWithPreview } from "@/types";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,9 +38,14 @@ type Inputs = z.infer<typeof ProductValidator>;
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
-function AddProduct() {
+interface IProps {
+  categories: CategoryType[];
+}
+
+function AddProduct({ categories }: IProps) {
   const [files, setFiles] = React.useState<FileWithPreview[] | null>(null);
   const [isPending, startTransition] = React.useTransition();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const { isUploading, startUpload } = useUploadThing("productImages");
 
@@ -50,14 +55,14 @@ function AddProduct() {
     defaultValues: {
       name: "Test Product Name",
       description: "Test Product Description",
-      category: "clothes",
+      category: categories[0].id,
       price: 10,
       countInStock: 2,
-      slug: "TEST-PRODUCT",
     },
   });
 
   function onSubmit(data: Inputs) {
+    setIsLoading(true);
     startTransition(async () => {
       try {
         // Check if product already exists in the store
@@ -79,22 +84,22 @@ function AddProduct() {
 
         // Add product to the store
 
-        fetch("http://localhost:3000/api/product", {
+        const newProduct = await fetch("http://localhost:3000/api/product", {
           method: "POST",
           body: JSON.stringify({
             ...data,
             images,
           }),
-        })
-          .then((data) => console.log(data))
-          .catch((err) => console.log(`err : ${err}`));
+        });
 
         toast.success("Product added successfully.");
 
         // Reset form and files
         form.reset();
         setFiles(null);
+        setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         error instanceof Error
           ? toast.error(error.message)
           : toast.error("Something went wrong.");
@@ -158,13 +163,13 @@ function AddProduct() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            {categoryEnums.map((option) => (
+                            {categories.map((option) => (
                               <SelectItem
-                                key={option.slug}
-                                value={option.slug}
+                                key={option.id}
+                                value={option.id}
                                 className="capitalize"
                               >
-                                {option.label}
+                                {option.name}
                               </SelectItem>
                             ))}
                           </SelectGroup>
@@ -212,7 +217,7 @@ function AddProduct() {
                 <FileDialog
                   setValue={form.setValue}
                   name="images"
-                  maxFiles={3}
+                  maxFiles={4}
                   maxSize={1024 * 1024 * 4}
                   files={files}
                   setFiles={setFiles}
@@ -224,13 +229,18 @@ function AddProduct() {
               // message={form.formState.errors.images?.message}
               />
             </FormItem>
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending && (
-                <Loader2
-                  className="mr-2 h-4 w-4 animate-spin"
-                  aria-hidden="true"
-                />
-              )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isPending || isLoading}
+            >
+              {isPending ||
+                (isLoading && (
+                  <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
+                ))}
               Add Product
               <span className="sr-only">Add Product</span>
             </Button>
@@ -242,10 +252,5 @@ function AddProduct() {
 }
 
 export default AddProduct;
-
-export const categoryEnums = [
-  { label: "Clothes", slug: "clothes" },
-  { label: "Tech", slug: "tech" },
-];
 
 async function addProductAction() {}

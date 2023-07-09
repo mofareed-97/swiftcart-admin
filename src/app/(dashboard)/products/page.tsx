@@ -1,25 +1,41 @@
 import AddProduct from "@/components/form/add-product";
+import { db } from "@/lib/db";
+import { CategoryType, ProductType } from "@/types";
 
-async function getAllProducts() {
-  const response = await fetch("http://localhost:3000/api/product");
+interface IProps {
+  products: ProductType[];
+  categories: CategoryType[];
+}
+async function getAllProducts(): Promise<IProps> {
+  const productsResponse = await fetch("http://localhost:3000/api/product");
+  const categories = await db.category.findMany();
 
-  if (!response.ok) {
+  if (!productsResponse.ok || !categories) {
     throw new Error("Failed to fetch movie");
   }
 
-  return response.json();
+  const productsData = await productsResponse.json();
+
+  return {
+    products: productsData.products,
+    categories,
+  };
 }
+// async function getAllProducts() {
+//   const products = await db.product.deleteMany();
+//   return products
+// }
 
 export default async function ProductsPage() {
-  const products = await getAllProducts();
+  const { products, categories } = await getAllProducts();
+  // const products = await getAllProducts();
 
-  console.log(products);
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Products</h2>
         <div className="flex items-center space-x-2">
-          <AddProduct />
+          <AddProduct categories={categories} />
         </div>
       </div>
       <div className=""></div>

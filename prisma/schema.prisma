@@ -11,14 +11,15 @@ datasource db {
 model Product {
   id           String   @id @default(cuid())
   slug         String   @unique
-  name         String
+  name         String   @db.Text
   price        Decimal
   rating       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  description  String
+  description  String   @db.Text
   images       Image[]
   countInStock Int
+  likes        Int      @default(0)
 
   categoryId String
   category   Category    @relation(fields: [categoryId], references: [id])
@@ -42,7 +43,7 @@ model Category {
   id      String    @id @default(cuid())
   name    String
   slug    String
-  Product Product[]
+  product Product[]
 }
 
 model Order {

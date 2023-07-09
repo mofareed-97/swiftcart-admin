@@ -4,7 +4,7 @@ export const ProductValidator = z.object({
   name: z.string(),
   price: z.number().or(z.string()),
   description: z.string(),
-  slug: z.string(),
+  slug: z.string().optional(),
   category: z.string(),
   rating: z.number().optional(),
 
@@ -28,7 +28,7 @@ export const ProductValidator = z.object({
         .default(null)
     ),
 
-  countInStock: z.number().or(z.string()).optional().default(1),
+  countInStock: z.number().optional().default(1),
 });
 
 // images: z

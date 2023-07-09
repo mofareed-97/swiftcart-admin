@@ -5,35 +5,42 @@ import slugify from "slugify";
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { name, price, images, category, countInStock, description, slug } =
+  const { name, price, images, category, countInStock, description } =
     ProductValidator.parse(body);
 
+  const slug = slugify(
+    name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .slice(0, 200)
+      .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, "")
+      .toString()
+    //Remove special characters
+  );
+  console.log(body);
+  console.log(slug);
   try {
     const newProduct = await db.product.create({
       data: {
         name,
         description,
         price,
-        slug: slugify(name),
+        slug,
         categoryId: category,
-        countInStock: 1,
+        countInStock,
         images: {
           createMany: {
-            data: {
-              ...images.map((image: any) => image),
-            },
+            data: [...images.map((image: { url: string }) => image)],
           },
         },
       },
     });
-    console.log(newProduct);
     return new Response(
       JSON.stringify({ status: "success", product: newProduct }),
       { status: 200 }
     );
   } catch (error: any) {
-    console.log("err server!");
-    console.log(error.message);
+    console.log(error);
     return new Response(
       JSON.stringify({ error: error.message, message: "internal error" }),
       {
@@ -45,8 +52,13 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const products = await db.product.findMany();
-    return new Response(JSON.stringify({ status: "success", products }), {
+    const products = await db.product.findMany({
+      include: {
+        images: true,
+        category: true,
+      },
+    });
+    return new Response(JSON.stringify({ products }), {
       status: 200,
     });
   } catch (error: any) {
