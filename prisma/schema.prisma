@@ -33,6 +33,7 @@ model Image {
   name      String
   url       String
   productId String
+  mainImage Boolean  @default(false)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 

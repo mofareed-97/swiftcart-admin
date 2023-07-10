@@ -7,7 +7,12 @@ interface IProps {
   products: ProductType[];
   categories: CategoryType[];
 }
-async function getAllProducts(): Promise<IProps> {
+
+export const delay = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+async function getAllProducts(time: number = 0): Promise<IProps> {
+  // await delay(2500);
   const productsResponse = await fetch("http://localhost:3000/api/product");
   const categories = await db.category.findMany();
 
@@ -31,8 +36,6 @@ export default async function ProductsPage() {
   const { products, categories } = await getAllProducts();
   // const products = await getAllProducts();
 
-  console.log(products);
-
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -42,7 +45,7 @@ export default async function ProductsPage() {
         </div>
       </div>
       <div className="">
-        <ProductsTable products={products} />
+        <ProductsTable products={products} categories={categories} />
       </div>
     </div>
   );

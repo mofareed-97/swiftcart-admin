@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductValidator } from "@/lib/validation/product";
-import { CategoryType, FileWithPreview } from "@/types";
+import { CategoryType, FileWithPreview, ProductType } from "@/types";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,7 @@ import { z } from "zod";
 import { isArrayOfFile } from "@/lib/utils";
 import { FileDialog } from "./file-dialog";
 import { Button } from "../ui/button";
-import { Loader2, PackagePlus } from "lucide-react";
+import { Edit, Loader2, PackagePlus } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -39,10 +39,11 @@ type Inputs = z.infer<typeof ProductValidator>;
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
 interface IProps {
+  product: ProductType;
   categories: CategoryType[];
 }
 
-function AddProduct({ categories }: IProps) {
+function EditProduct({ product, categories }: IProps) {
   const [files, setFiles] = React.useState<FileWithPreview[] | null>(null);
   const [isPending, startTransition] = React.useTransition();
   const [isLoading, setIsLoading] = React.useState(false);
@@ -50,15 +51,28 @@ function AddProduct({ categories }: IProps) {
 
   const { isUploading, startUpload } = useUploadThing("productImages");
 
+  React.useEffect(() => {
+    if (product.images && product.images.length > 0) {
+      setFiles(
+        product.images.map((image) => {
+          const file = new File([], image.name, {
+            type: "image",
+          });
+          const fileWithPreview = Object.assign(file, {
+            preview: image.url,
+          });
+
+          return fileWithPreview;
+        })
+      );
+    }
+  }, [product]);
   // react-hook-form
   const form = useForm<Inputs>({
     resolver: zodResolver(ProductValidator),
     defaultValues: {
-      name: "Test Product Name",
-      description: "Test Product Description",
-      category: categories[0].id,
-      price: 10,
-      countInStock: 2,
+      ...product,
+      category: product.category.id,
     },
   });
 
@@ -66,30 +80,30 @@ function AddProduct({ categories }: IProps) {
     setIsLoading(true);
     startTransition(async () => {
       try {
-        // Check if product already exists in the store
-        // await checkProductAction({
-        //   name: data.name,
-        // })
-        // Upload images if data.images is an array of files
-        if (!isArrayOfFile(data.images)) return;
-        const images = await startUpload(data.images).then((res) => {
-          const formattedImages = res?.map((image) => ({
-            id: image.fileKey,
-            name: image.fileKey.split("_")[1] ?? image.fileKey,
-            url: image.fileUrl,
-          }));
-          return formattedImages;
-        });
-        // Add product to the store
-        await fetch("http://localhost:3000/api/product", {
-          method: "POST",
+        if (files!.length > 4) {
+          toast.error("Sorry you can upload 4 images maximum");
+          return;
+        }
+        const images = isArrayOfFile(data.images)
+          ? await startUpload(data.images).then((res) => {
+              const formattedImages = res?.map((image) => ({
+                id: image.fileKey,
+                name: image.fileKey.split("_")[1] ?? image.fileKey,
+                url: image.fileUrl,
+              }));
+              return formattedImages ?? null;
+            })
+          : null;
+
+        await fetch(`http://localhost:3000/api/product/${product.id}`, {
+          method: "PATCH",
           body: JSON.stringify({
             ...data,
-            images,
+            images: images ?? product.images,
           }),
         });
 
-        toast.success("Product added successfully.");
+        toast.success("Product updated successfully.");
         // Reset form and files
         form.reset();
         setOpenDialog(false);
@@ -103,11 +117,12 @@ function AddProduct({ categories }: IProps) {
       }
     });
   }
+
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
-        <Button>
-          New Product <PackagePlus className="ml-2 w-4 h-4" />
+        <Button variant={"ghost"}>
+          <Edit className="w-3 h-3" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
@@ -228,7 +243,7 @@ function AddProduct({ categories }: IProps) {
             </FormItem>
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-orange-400"
               disabled={isPending || isLoading}
             >
               {isPending ||
@@ -238,8 +253,8 @@ function AddProduct({ categories }: IProps) {
                     aria-hidden="true"
                   />
                 ))}
-              Add Product
-              <span className="sr-only">Add Product</span>
+              Update Product
+              <span className="sr-only">Update Product</span>
             </Button>
           </form>
         </Form>
@@ -248,6 +263,6 @@ function AddProduct({ categories }: IProps) {
   );
 }
 
-export default AddProduct;
+export default EditProduct;
 
 async function addProductAction() {}

@@ -15,7 +15,8 @@ function LinkBtn({ label, path, icon }: IProps) {
   const isActive = pathName === path;
   return (
     <Button
-      onClick={() => router.push(path)}
+      // onClick={() => router.push(path)}
+      onClick={() => (window.location.href = path)}
       key={path}
       variant={isActive ? "secondary" : "ghost"}
       className="w-full justify-start"

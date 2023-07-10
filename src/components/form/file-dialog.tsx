@@ -58,23 +58,28 @@ export function FileDialog<TFieldValues extends FieldValues>({
         }
       );
 
-      console.log(files);
-
-      // setFiles((prevFile) => [
-      //   ...prevFile,
-      //   ...acceptedFiles.map((file) =>
-      //     Object.assign(file, {
-      //       preview: URL.createObjectURL(file),
-      //     })
-      //   ),
-      // ]);
-      setFiles(
-        acceptedFiles.map((file) =>
+      setFiles((prevFiles) => {
+        // @ts-ignore
+        if (prevFiles?.length > 3) return prevFiles;
+        const newFiles = acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
-        )
-      );
+        );
+        if (prevFiles) {
+          return [...prevFiles, ...newFiles];
+        } else {
+          return newFiles;
+        }
+      });
+
+      // setFiles(
+      //   acceptedFiles.map((file) =>
+      //     Object.assign(file, {
+      //       preview: URL.createObjectURL(file),
+      //     })
+      //   )
+      // );
 
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ errors }) => {

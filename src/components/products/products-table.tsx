@@ -9,16 +9,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
-import { ProductType } from "@/types";
+import { CategoryType, ProductType } from "@/types";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Edit } from "lucide-react";
+import { Badge } from "../ui/badge";
+import EditProduct from "../form/edit-product";
 
 interface IProps {
+  categories: CategoryType[];
   products: ProductType[];
 }
 
-function ProductsTable({ products }: IProps) {
+function ProductsTable({ products, categories }: IProps) {
   return (
     <Table>
       <TableCaption>A list of your recent invoices.</TableCaption>
@@ -27,8 +30,8 @@ function ProductsTable({ products }: IProps) {
           <TableHead className="w-[100px]">Image</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Category</TableHead>
-          <TableHead>Created At</TableHead>
           <TableHead className="">Count In Stock</TableHead>
+          <TableHead>Created At</TableHead>
           <TableHead className="">Price</TableHead>
           <TableHead className="text-right">Action</TableHead>
         </TableRow>
@@ -48,17 +51,19 @@ function ProductsTable({ products }: IProps) {
                   />
                 </div>
               </TableCell>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{product.category.name}</TableCell>
+              <TableCell className="max-w-[200px] pr-6">
+                <p className="line-clamp-2">{product.name}</p>
+              </TableCell>
+              <TableCell>
+                <Badge variant="secondary">{product.category.name}</Badge>
+              </TableCell>
               <TableCell className="">{product.countInStock}</TableCell>
               <TableCell className="">
                 {format(new Date(product.createdAt), "LLL dd, y")}
               </TableCell>
-              <TableCell className="\">$250</TableCell>
+              <TableCell className="\">${product.price}</TableCell>
               <TableCell className="text-right">
-                <Button variant={"ghost"}>
-                  <Edit className="w-3 h-3" />
-                </Button>
+                <EditProduct product={product} categories={categories} />
               </TableCell>
             </TableRow>
           );

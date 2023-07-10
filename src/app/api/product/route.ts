@@ -17,8 +17,6 @@ export async function POST(req: Request) {
       .toString()
     //Remove special characters
   );
-  console.log(body);
-  console.log(slug);
   try {
     const newProduct = await db.product.create({
       data: {

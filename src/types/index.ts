@@ -6,7 +6,7 @@ export type FileWithPreview = FileWithPath & {
 
 export interface StoredFile {
   id: string;
-  name?: string;
+  name: string;
   productId?: string;
   url: string;
 }
