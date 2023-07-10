@@ -58,6 +58,16 @@ export function FileDialog<TFieldValues extends FieldValues>({
         }
       );
 
+      console.log(files);
+
+      // setFiles((prevFile) => [
+      //   ...prevFile,
+      //   ...acceptedFiles.map((file) =>
+      //     Object.assign(file, {
+      //       preview: URL.createObjectURL(file),
+      //     })
+      //   ),
+      // ]);
       setFiles(
         acceptedFiles.map((file) =>
           Object.assign(file, {
