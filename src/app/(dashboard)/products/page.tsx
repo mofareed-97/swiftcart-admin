@@ -8,9 +8,9 @@ interface IProps {
   categories: CategoryType[];
 }
 
-export const delay = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
+// export const delay = (ms: number) => {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// };
 async function getAllProducts(time: number = 0): Promise<IProps> {
   // await delay(2500);
   const productsResponse = await fetch("http://localhost:3000/api/product");
