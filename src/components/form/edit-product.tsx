@@ -98,7 +98,8 @@ function EditProduct({ product, categories }: IProps) {
             })
           : null;
 
-        await fetch(`http://localhost:3000/api/product/${product.id}`, {
+        // await fetch(`http://localhost:3000/api/product/${product.id}`, {
+        await fetch(`http://swiftcart-admin/api/product/${product.id}`, {
           method: "PATCH",
           body: JSON.stringify({
             ...data,

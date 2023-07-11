@@ -70,7 +70,8 @@ function AddProduct({ categories }: IProps) {
           return formattedImages;
         });
         // Add product to the store
-        await fetch("http://localhost:3000/api/product", {
+        // await fetch("http://localhost:3000/api/product", {
+        await fetch("http://swiftcart-admin/api/product", {
           method: "POST",
           body: JSON.stringify({
             ...data,
