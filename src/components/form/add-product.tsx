@@ -59,10 +59,6 @@ function AddProduct({ categories }: IProps) {
     setIsLoading(true);
     startTransition(async () => {
       try {
-        // Check if product already exists in the store
-        // await checkProductAction({
-        //   name: data.name,
-        // })
         // Upload images if data.images is an array of files
         if (!isArrayOfFile(data.images)) return;
         const images = await startUpload(data.images).then((res) => {

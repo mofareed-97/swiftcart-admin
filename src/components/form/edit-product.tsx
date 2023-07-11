@@ -69,8 +69,6 @@ function EditProduct({ product, categories }: IProps) {
         })
       );
     }
-
-    console.log(product);
   }, [product]);
   // react-hook-form
   const form = useForm<Inputs>({
