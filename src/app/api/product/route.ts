@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { ProductValidator } from "@/lib/validation/product";
+import { NextResponse } from "next/server";
 import slugify from "slugify";
 
 export async function POST(req: Request) {
@@ -33,14 +34,14 @@ export async function POST(req: Request) {
         },
       },
     });
-    return new Response(
-      JSON.stringify({ status: "success", product: newProduct }),
+    return NextResponse.json(
+      { status: "success", product: newProduct },
       { status: 200 }
     );
   } catch (error: any) {
     console.log(error);
-    return new Response(
-      JSON.stringify({ error: error.message, message: "internal error" }),
+    return NextResponse.json(
+      { error: error.message, message: "internal error" },
       {
         status: 500,
       }
@@ -48,7 +49,8 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  console.log("fetching...");
   try {
     const products = await db.product.findMany({
       include: {
@@ -56,12 +58,17 @@ export async function GET() {
         category: true,
       },
     });
-    return new Response(JSON.stringify({ products }), {
-      status: 200,
-    });
+
+    return NextResponse.json(
+      { products },
+      {
+        status: 200,
+      }
+    );
   } catch (error: any) {
-    return new Response(
-      JSON.stringify({ error: error.message, message: "internal error" }),
+    console.log("err");
+    return NextResponse.json(
+      { error: error.message, message: "internal error" },
       {
         status: 500,
       }

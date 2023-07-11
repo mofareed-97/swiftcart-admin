@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { ProductValidator } from "@/lib/validation/product";
 import { StoredFile } from "@/types";
 import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
 import slugify from "slugify";
 import { utapi } from "uploadthing/server";
 
@@ -25,9 +26,12 @@ export async function PATCH(
     });
 
     if (!product) {
-      return new Response(JSON.stringify({ message: "Product not found" }), {
-        status: 404,
-      });
+      return NextResponse.json(
+        { message: "Product not found" },
+        {
+          status: 404,
+        }
+      );
     }
 
     const slug = slugify(
@@ -61,11 +65,11 @@ export async function PATCH(
 
       revalidatePath("/products");
 
-      return new Response(
-        JSON.stringify({
+      return NextResponse.json(
+        {
           status: "success",
           message: "Product updated Successfully",
-        }),
+        },
         { status: 200 }
       );
     }
@@ -90,19 +94,19 @@ export async function PATCH(
       },
     });
 
-    revalidatePath("/products");
+    // revalidatePath("/products");
 
-    return new Response(
-      JSON.stringify({
+    return NextResponse.json(
+      {
         status: "success",
         message: "Product updated Successfully",
-      }),
+      },
       { status: 200 }
     );
   } catch (error: any) {
     console.log(error);
-    return new Response(
-      JSON.stringify({ error: error.message, message: "internal error" }),
+    return NextResponse.json(
+      { error: error.message, message: "internal error" },
       {
         status: 500,
       }

@@ -34,6 +34,7 @@ async function getAllProducts(time: number = 0): Promise<IProps> {
 
 export default async function ProductsPage() {
   const { products, categories } = await getAllProducts();
+
   // const products = await getAllProducts();
 
   return (
