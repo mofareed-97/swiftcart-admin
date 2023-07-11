@@ -53,13 +53,6 @@ function AddProduct({ categories }: IProps) {
   // react-hook-form
   const form = useForm<Inputs>({
     resolver: zodResolver(ProductValidator),
-    defaultValues: {
-      name: "Test Product Name",
-      description: "Test Product Description",
-      category: categories[0].id,
-      price: 10,
-      countInStock: 2,
-    },
   });
 
   function onSubmit(data: Inputs) {

@@ -43,7 +43,7 @@ function ProductsTable({ products, categories }: IProps) {
               <TableCell className="font-medium">
                 <div className="bg_product relative h-20">
                   <Image
-                    src={product.images[1].url}
+                    src={product.mainImage || product.images[0].url}
                     alt={`${product.name} image`}
                     className="object-cover"
                     sizes="25vw"

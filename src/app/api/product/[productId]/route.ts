@@ -13,8 +13,15 @@ export async function PATCH(
   const body = await req.json();
 
   //   const { name, price, images, category, countInStock, description } =
-  const { name, price, images, category, countInStock, description } =
-    ProductValidator.parse(body);
+  const {
+    name,
+    price,
+    images,
+    category,
+    countInStock,
+    description,
+    mainImage,
+  } = ProductValidator.parse(body);
   try {
     const product = await db.product.findFirst({
       where: {
@@ -60,6 +67,7 @@ export async function PATCH(
           slug,
           categoryId: category,
           countInStock,
+          mainImage,
         },
       });
 
@@ -86,6 +94,7 @@ export async function PATCH(
         slug,
         categoryId: category,
         countInStock,
+        mainImage: mainImage ? mainImage : images[0].url,
         images: {
           createMany: {
             data: [...images.map((image: { url: string }) => image)],

@@ -7,7 +7,7 @@ export const ProductValidator = z.object({
   slug: z.string().optional(),
   category: z.string(),
   rating: z.number().optional(),
-
+  mainImage: z.string().or(z.null()).optional(),
   images: z
     .object({
       id: z.string(),

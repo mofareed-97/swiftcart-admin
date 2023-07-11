@@ -50,6 +50,9 @@ function EditProduct({ product, categories }: IProps) {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const { isUploading, startUpload } = useUploadThing("productImages");
+  const [newMainImage, setNewMainImage] = React.useState(
+    product.mainImage || ""
+  );
 
   React.useEffect(() => {
     if (product.images && product.images.length > 0) {
@@ -66,6 +69,8 @@ function EditProduct({ product, categories }: IProps) {
         })
       );
     }
+
+    console.log(product);
   }, [product]);
   // react-hook-form
   const form = useForm<Inputs>({
@@ -100,6 +105,7 @@ function EditProduct({ product, categories }: IProps) {
           body: JSON.stringify({
             ...data,
             images: images ?? product.images,
+            mainImage: newMainImage ? newMainImage : product.mainImage,
           }),
         });
 
@@ -227,9 +233,12 @@ function EditProduct({ product, categories }: IProps) {
               <FormLabel>Images</FormLabel>
               <FormControl>
                 <FileDialog
+                  isUpdating={true}
                   setValue={form.setValue}
                   name="images"
                   maxFiles={4}
+                  mainImage={newMainImage}
+                  setNewMainImage={setNewMainImage}
                   maxSize={1024 * 1024 * 4}
                   files={files}
                   setFiles={setFiles}

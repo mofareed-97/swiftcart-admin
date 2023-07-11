@@ -24,6 +24,7 @@ export interface ProductType {
   slug: string;
   price: number;
   images: StoredFile[];
+  mainImage: string | null;
   createdAt: Date;
   rating: number;
   countInStock: number;

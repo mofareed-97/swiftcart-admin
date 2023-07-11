@@ -18,7 +18,8 @@ import type {
 import { cn, formatBytes } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Trash, UploadCloud, X } from "lucide-react";
+import { Check, Trash, UploadCloud, X } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 interface FileDialogProps<TFieldValues extends FieldValues>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -29,8 +30,11 @@ interface FileDialogProps<TFieldValues extends FieldValues>
   maxFiles?: number;
   files: FileWithPreview[] | null;
   setFiles: React.Dispatch<React.SetStateAction<FileWithPreview[] | null>>;
+  setNewMainImage?: (url: string) => void;
+  isUpdating?: boolean;
   isUploading?: boolean;
   disabled?: boolean;
+  mainImage?: string | null;
 }
 
 export function FileDialog<TFieldValues extends FieldValues>({
@@ -43,8 +47,11 @@ export function FileDialog<TFieldValues extends FieldValues>({
   maxFiles = 1,
   files,
   setFiles,
+  setNewMainImage,
+  isUpdating = false,
   isUploading = false,
   disabled = false,
+  mainImage,
   className,
   ...props
 }: FileDialogProps<TFieldValues>) {
@@ -73,23 +80,15 @@ export function FileDialog<TFieldValues extends FieldValues>({
         }
       });
 
-      // setFiles(
-      //   acceptedFiles.map((file) =>
-      //     Object.assign(file, {
-      //       preview: URL.createObjectURL(file),
-      //     })
-      //   )
-      // );
-
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ errors }) => {
           if (errors[0]?.code === "file-too-large") {
-            // toast.error(
-            //   `File is too large. Max size is ${formatBytes(maxSize)}`
-            // );
+            toast.error(
+              `File is too large. Max size is ${formatBytes(maxSize)}`
+            );
             return;
           }
-          //   errors[0]?.message && toast.error(errors[0].message);
+          errors[0]?.message && toast.error(errors[0].message);
         });
       }
     },
@@ -171,17 +170,71 @@ export function FileDialog<TFieldValues extends FieldValues>({
         </p>
         {files?.length ? (
           <div className="grid gap-5">
-            {files?.map((file, i) => (
-              <FileCard
-                key={i}
-                i={i}
-                name={name}
-                setValue={setValue}
-                files={files}
-                setFiles={setFiles}
-                file={file}
-              />
-            ))}
+            {files?.map((file, i) => {
+              return (
+                <div
+                  key={i}
+                  className="relative flex items-center justify-between gap-2.5"
+                >
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src={file.preview}
+                      alt={file.name}
+                      className="h-10 w-10 shrink-0 rounded-md"
+                      width={40}
+                      height={40}
+                      loading="lazy"
+                    />
+                    <div className="flex flex-col">
+                      <p className="line-clamp-1 text-sm font-medium text-muted-foreground">
+                        {file.name}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {(file.size / 1024 / 1024).toFixed(2)}MB
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isUpdating ? (
+                      <Button
+                        disabled={mainImage === file.preview}
+                        onClick={() => {
+                          if (isUpdating && setNewMainImage) {
+                            setNewMainImage(file.preview);
+                          }
+                        }}
+                        className="h-7 w-7 p-0"
+                      >
+                        <Check className="h-4 w-4 " />
+                      </Button>
+                    ) : null}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => {
+                        if (!files) return;
+                        setFiles(files.filter((_, j) => j !== i));
+                        setValue(
+                          name,
+                          files.filter((_, j) => j !== i) as PathValue<
+                            TFieldValues,
+                            Path<TFieldValues>
+                          >,
+                          {
+                            shouldValidate: true,
+                          }
+                        );
+                      }}
+                    >
+                      <X className="h-4 w-4 " aria-hidden="true" />
+                      <span className="sr-only">Remove file</span>
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : null}
         {files?.length ? (
@@ -228,12 +281,6 @@ function FileCard<TFieldValues extends FieldValues>({
   files,
   setFiles,
 }: FileCardProps<TFieldValues>) {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  // Crop image
-
-  // Crop image on enter key press
-
   return (
     <div className="relative flex items-center justify-between gap-2.5">
       <div className="flex items-center gap-2">
@@ -255,6 +302,9 @@ function FileCard<TFieldValues extends FieldValues>({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <Button className="h-7 w-7 p-0">
+          <Check className="h-4 w-4 " />
+        </Button>
         <Button
           type="button"
           variant="outline"
