@@ -13,7 +13,9 @@ interface IProps {
 // };
 async function getAllProducts(time: number = 0): Promise<IProps> {
   // await delay(2500);
-  const productsResponse = await fetch("https://swiftcart-admin/api/product");
+  const productsResponse = await fetch(
+    "https://swiftcart-admin.vercel.app/api/product"
+  );
   const categories = await db.category.findMany();
 
   if (!productsResponse.ok || !categories) {

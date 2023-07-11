@@ -71,7 +71,7 @@ function AddProduct({ categories }: IProps) {
         });
         // Add product to the store
         // await fetch("http://localhost:3000/api/product", {
-        await fetch("http://swiftcart-admin/api/product", {
+        await fetch("https://swiftcart-admin.vercel.app/api/product", {
           method: "POST",
           body: JSON.stringify({
             ...data,
