@@ -14,12 +14,18 @@ interface IProps {
 async function getAllProducts(time: number = 0): Promise<IProps> {
   // await delay(2500);
   const productsResponse = await fetch(
-    "https://swiftcart-admin.vercel.app/api/product"
+    "https://swiftcart-admin.vercel.app/api/product",
+    {
+      cache: "no-store",
+      next: {
+        revalidate: 0,
+      },
+    }
   );
   const categories = await db.category.findMany();
 
   if (!productsResponse.ok || !categories) {
-    throw new Error("Failed to fetch movie");
+    throw new Error("Failed to fetch");
   }
 
   const productsData = await productsResponse.json();

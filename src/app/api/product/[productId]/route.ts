@@ -71,8 +71,6 @@ export async function PATCH(
         },
       });
 
-      revalidatePath("/products");
-
       return NextResponse.json(
         {
           status: "success",
