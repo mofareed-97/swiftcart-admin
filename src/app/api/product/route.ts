@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { ProductValidator } from "@/lib/validation/product";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
 
@@ -21,8 +22,8 @@ export async function POST(req: Request) {
   try {
     const newProduct = await db.product.create({
       data: {
-        name,
-        description,
+        name: name.trim(),
+        description: description.trim(),
         price,
         slug,
         categoryId: category,
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
         },
       },
     });
+
     return NextResponse.json(
       { status: "success", product: newProduct },
       { status: 200 }
@@ -50,9 +52,11 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  console.log("fetching...");
   try {
     const products = await db.product.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         images: true,
         category: true,

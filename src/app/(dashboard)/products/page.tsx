@@ -14,7 +14,8 @@ interface IProps {
 async function getAllProducts(time: number = 0): Promise<IProps> {
   // await delay(2500);
   const productsResponse = await fetch(
-    "https://swiftcart-admin.vercel.app/api/product",
+    // "https://swiftcart-admin.vercel.app/api/product",
+    "http://localhost:3000/api/product",
     {
       cache: "no-store",
       next: {
@@ -48,7 +49,7 @@ export default async function ProductsPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Products</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Products</h2>
         <div className="flex items-center space-x-2">
           <AddProduct categories={categories} />
         </div>

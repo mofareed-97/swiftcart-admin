@@ -30,3 +30,5 @@ export interface ProductType {
   countInStock: number;
   category: CategoryType;
 }
+
+export type UserRole = "user" | "admin";

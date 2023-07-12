@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const ProductValidator = z.object({
-  name: z.string(),
+  name: z.string().min(10),
   price: z.number().or(z.string()),
-  description: z.string(),
+  description: z.string().min(10),
   slug: z.string().optional(),
   category: z.string(),
   rating: z.number().optional(),

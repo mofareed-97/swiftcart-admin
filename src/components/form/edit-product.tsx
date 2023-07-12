@@ -98,18 +98,14 @@ function EditProduct({ product, categories }: IProps) {
             })
           : null;
 
-        // await fetch(`http://localhost:3000/api/product/${product.id}`, {
-        await fetch(
-          `https://swiftcart-admin.vercel.app/api/product/${product.id}`,
-          {
-            method: "PATCH",
-            body: JSON.stringify({
-              ...data,
-              images: images ?? product.images,
-              mainImage: newMainImage ? newMainImage : product.mainImage,
-            }),
-          }
-        );
+        await fetch(`api/product/${product.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            ...data,
+            images: images ?? product.images,
+            mainImage: newMainImage ? newMainImage : product.mainImage,
+          }),
+        });
 
         toast.success("Product updated successfully.");
         // Reset form and files
