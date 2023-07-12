@@ -14,8 +14,8 @@ interface IProps {
 async function getAllProducts(time: number = 0): Promise<IProps> {
   // await delay(2500);
   const productsResponse = await fetch(
-    // "https://swiftcart-admin.vercel.app/api/product",
-    "http://localhost:3000/api/product",
+    "https://swiftcart-admin.vercel.app/api/product",
+    // "http://localhost:3000/api/product",
     {
       cache: "no-store",
       next: {
