@@ -20,6 +20,7 @@ import { isClerkAPIResponseError, useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
+import { Icons } from "../icons";
 
 type Inputs = z.infer<typeof AuthValidator>;
 
@@ -66,7 +67,10 @@ export function SignInWithEmail() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={(...args) => form.handleSubmit(onSubmit)(...args)}
+        className="space-y-4"
+      >
         <FormField
           control={form.control}
           name="email"
@@ -96,9 +100,7 @@ export function SignInWithEmail() {
         {/* <Button type="submit">Submit</Button> */}
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-          )}
+          {isPending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
           Sign in with email
           <span className="sr-only">Sign in</span>
         </Button>
