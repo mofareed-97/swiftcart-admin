@@ -1,30 +1,31 @@
 "use client";
 import React, { ReactElement, ReactNode } from "react";
-import { Button } from "../ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { buttonVariants } from "../ui/button";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface IProps {
   path: string;
   label: string;
   icon: ReactElement;
 }
-function LinkBtn({ label, path, icon }: IProps) {
-  const router = useRouter();
+function SideLinkBtn({ label, path, icon }: IProps) {
   const pathName = usePathname();
 
   const isActive = pathName === path;
   return (
-    <Button
-      // onClick={() => router.push(path)}
-      onClick={() => (window.location.href = path)}
-      key={path}
-      variant={isActive ? "secondary" : "ghost"}
-      className="w-full justify-start"
+    <Link
+      href={path}
+      className={cn(
+        buttonVariants({ variant: isActive ? "secondary" : "ghost" }),
+        "w-full justify-start"
+      )}
     >
       {icon}
       <span>{label}</span>
-    </Button>
+    </Link>
   );
 }
 
-export default LinkBtn;
+export default SideLinkBtn;

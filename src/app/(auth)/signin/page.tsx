@@ -11,17 +11,17 @@ export const metadata: Metadata = {
   description: "Authentication forms built using the components.",
 };
 
-export default async function AuthenticationPage() {
+export default function AuthenticationPage() {
   return (
     <div className="lg:p-8 relative h-full w-full">
-      {/* <div className="absolute right-4 top-4 md:right-8 md:top-8 flex items-center gap-2">
+      <div className="absolute right-4 top-4 md:right-8 md:top-8 flex items-center gap-2">
         <Link
           href="/signup"
           className={cn(buttonVariants({ variant: "ghost" }))}
         >
           Sign up
         </Link>
-      </div> */}
+      </div>
       <div className="mx-auto flex w-full flex-col justify-center h-full  space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Login</h1>

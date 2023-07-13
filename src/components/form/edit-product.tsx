@@ -9,7 +9,7 @@ import { z } from "zod";
 import { isArrayOfFile } from "@/lib/utils";
 import { FileDialog } from "./file-dialog";
 import { Button } from "../ui/button";
-import { Edit, Loader2, PackagePlus } from "lucide-react";
+import { Edit, Loader2, MoreVertical, PackagePlus } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -126,7 +126,8 @@ function EditProduct({ product, categories }: IProps) {
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
         <Button variant={"ghost"}>
-          <Edit className="w-3 h-3" />
+          {/* <Edit className="w-3 h-3" /> */}
+          <MoreVertical className="w-3 h-3" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">

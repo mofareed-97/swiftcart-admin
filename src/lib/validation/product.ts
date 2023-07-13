@@ -31,13 +31,8 @@ export const ProductValidator = z.object({
   countInStock: z.number().optional().default(1),
 });
 
-// images: z
-// .any()
-// .refine((val) => {
-//   if (!Array.isArray(val)) return false;
-//   if (val.some((file) => !(file instanceof File))) return false;
-//   return true;
-// }, "Must be an array of File")
-// .optional()
-// .nullable()
-// .default(null),
+export const GetProductsValidator = z.object({
+  page: z.string().optional().default("1"),
+});
+
+export type GetProductsValidatorSchema = z.infer<typeof GetProductsValidator>;

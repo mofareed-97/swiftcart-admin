@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Icons } from "../icons";
-import LinkBtn from "./routeBtn";
+import SideLinkBtn from "./routeBtn";
 import { useClerk } from "@clerk/nextjs";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -63,7 +63,7 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="space-y-1">
             {sideLinks.map((item) => {
               return (
-                <LinkBtn
+                <SideLinkBtn
                   key={item.path}
                   path={item.path}
                   label={item.label}
@@ -75,7 +75,7 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         <div className="px-3 py-2">
-          <LinkBtn
+          <SideLinkBtn
             path={"/settings"}
             label={"Settings"}
             icon={<Settings className="mr-2 w-4 h-4" />}

@@ -52,8 +52,17 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+
+  const page = searchParams.get("page") || "1";
+  const limit = 20;
+  const count = await db.product.count();
+  const totalPages = Math.ceil(count / limit);
+
   try {
     const products = await db.product.findMany({
+      take: limit,
+      skip: (parseInt(page) - 1) * limit,
       orderBy: {
         createdAt: "desc",
       },
@@ -64,7 +73,7 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(
-      { products },
+      { totalPages, results: products },
       {
         status: 200,
       }

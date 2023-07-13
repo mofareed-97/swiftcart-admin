@@ -53,7 +53,6 @@ export function SignInWithEmail() {
           router.push(`${window.location.origin}/`);
         } else {
           /*Investigate why the login hasn't completed */
-          console.log(result);
         }
       } catch (error) {
         const unknownError = "Something went wrong, please try again.";
