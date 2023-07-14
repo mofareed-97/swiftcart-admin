@@ -28,6 +28,7 @@ export interface ProductType {
   createdAt: Date;
   rating: number;
   countInStock: number;
+  sales: number;
   category: CategoryType;
 }
 

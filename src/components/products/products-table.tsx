@@ -33,7 +33,7 @@ function ProductsTable({ products, categories }: IProps) {
           <TableHead className="">Count In Stock</TableHead>
           <TableHead>Created At</TableHead>
           <TableHead className="">Price</TableHead>
-          <TableHead className="">Ratings</TableHead>
+          <TableHead className="">Sales</TableHead>
           <TableHead className="text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
@@ -58,12 +58,16 @@ function ProductsTable({ products, categories }: IProps) {
               <TableCell>
                 <Badge variant="secondary">{product.category.name}</Badge>
               </TableCell>
-              <TableCell className="">{product.countInStock}</TableCell>
+              <TableCell className="">
+                {product.countInStock} In stock
+              </TableCell>
               <TableCell className="">
                 {format(new Date(product.createdAt), "LLL dd, y")}
               </TableCell>
               <TableCell className="">${product.price}</TableCell>
-              <TableCell className="">11</TableCell>
+              <TableCell className="">
+                {product.sales ? product.sales : "Not Available"}
+              </TableCell>
               <TableCell className="text-right">
                 <EditProduct product={product} categories={categories} />
               </TableCell>

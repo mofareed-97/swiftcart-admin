@@ -21,6 +21,7 @@ model Product {
   images       Image[]
   countInStock Int
   likes        Int      @default(0)
+  sales        Int      @default(0)
 
   categoryId String
   category   Category    @relation(fields: [categoryId], references: [id])

@@ -41,7 +41,7 @@ export default function AuthenticationPage() {
           </div>
         </div>
 
-        <OAuthSignIn />
+        {/* <OAuthSignIn /> */}
       </div>
     </div>
   );

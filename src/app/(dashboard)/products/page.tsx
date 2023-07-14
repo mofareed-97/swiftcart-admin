@@ -1,4 +1,5 @@
 import AddProduct from "@/components/form/add-product";
+import { MultiSelect } from "@/components/multi-select";
 import ProductsTable from "@/components/products/products-table";
 import TablePrdouctsPagination from "@/components/products/table-pagination";
 import { db } from "@/lib/db";
@@ -24,9 +25,12 @@ async function getAllProducts(
   input: GetProductsValidatorSchema
 ): Promise<IProps> {
   const productsResponse = await fetch(
-    // "https://swiftcart-admin.vercel.app/api/product",
-    // `http://localhost:3000/api/product?page=${input.page || "1"}`,
-    `https://swiftcart-admin.vercel.app/api/product?page=${input.page || "1"}`,
+    `https://swiftcart-admin.vercel.app/api/product?page=${input.page || "1"}${
+      input.categories ? `&categories=${input.categories}` : ""
+    }`,
+    // `http://localhost:3000/api/product?page=${input.page || "1"}${
+    //   input.categories ? `&categories=${input.categories}` : ""
+    // }`,
     {
       cache: "no-store",
       next: {
@@ -58,6 +62,7 @@ export default async function ProductsPage({
 }: ProductsParams) {
   const { products, categories } = await getAllProducts({
     page: searchParams.page,
+    categories: searchParams.categories,
   });
 
   return (
@@ -65,6 +70,7 @@ export default async function ProductsPage({
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-2xl font-bold tracking-tight">Products</h2>
         <div className="flex items-center space-x-2">
+          <MultiSelect categories={categories} />
           <AddProduct categories={categories} />
         </div>
       </div>

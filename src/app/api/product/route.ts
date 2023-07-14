@@ -55,12 +55,23 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
 
   const page = searchParams.get("page") || "1";
+  const categories = searchParams.get("categories");
   const limit = 20;
+
+  const categoriesIds = categories?.split(".").map(String) ?? [];
+
   const count = await db.product.count();
   const totalPages = Math.ceil(count / limit);
 
   try {
     const products = await db.product.findMany({
+      where: {
+        category: categoriesIds.length
+          ? {
+              OR: categoriesIds.map((cate) => ({ slug: cate })),
+            }
+          : undefined,
+      },
       take: limit,
       skip: (parseInt(page) - 1) * limit,
       orderBy: {
