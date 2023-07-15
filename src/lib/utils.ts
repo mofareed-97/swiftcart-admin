@@ -24,3 +24,7 @@ export function isArrayOfFile(files: unknown): files is File[] {
   if (!isArray) return false;
   return files.every((file) => file instanceof File);
 }
+
+export function getRandomIntNumber() {
+  return `SC${Math.floor(Math.random() * 90000) + 10000}`;
+}

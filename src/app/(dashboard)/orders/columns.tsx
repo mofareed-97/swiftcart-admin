@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,16 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { CaretSortIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
+import { Check, X } from "lucide-react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
   id: string;
+  name: string;
   amount: number;
   status: "pending" | "processing" | "success" | "failed";
   email: string;
+  isPaid: boolean;
+  qty: number;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -43,10 +49,45 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "id",
+    header: "Order Id",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
+  },
+  {
+    accessorKey: "name",
+    header: "Customer",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+  },
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="flex items-center gap-2">
+        <span className="relative flex h-2 w-2">
+          <span
+            className={cn(
+              "animate-ping absolute inline-flex h-full w-full rounded-full  opacity-75",
+              row.getValue("status") === "success"
+                ? "bg-green-400 "
+                : row.getValue("status") === "processing"
+                ? "bg-sky-400"
+                : "bg-red-400"
+            )}
+          ></span>
+          <span
+            className={cn(
+              "relative inline-flex rounded-full h-2 w-2",
+              row.getValue("status") === "success"
+                ? "bg-green-500 "
+                : row.getValue("status") === "processing"
+                ? "bg-sky-500"
+                : "bg-red-500"
+            )}
+          ></span>
+        </span>
+
+        <div className="capitalize">{row.getValue("status")}</div>
+      </div>
     ),
   },
   {
@@ -63,6 +104,34 @@ export const columns: ColumnDef<Payment>[] = [
       );
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "isPaid",
+    header: "Payment",
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.getValue("isPaid") ? (
+          <Badge variant={"secondary"} className="bg-green-50  text-green-600">
+            <Check className="w-4 h-4 text-green-500 mr-1" />
+            Paid
+          </Badge>
+        ) : (
+          <Badge variant={"secondary"} className="bg-red-50  text-red-600">
+            <X className="w-4 h-4 text-red-500 mr-1" />
+            Not Paid
+          </Badge>
+        )}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "qty",
+    header: () => <div className="text-center">Quantity</div>,
+    cell: ({ row }) => {
+      return (
+        <div className="text-center font-medium">{row.getValue("qty")}</div>
+      );
+    },
   },
   {
     accessorKey: "amount",

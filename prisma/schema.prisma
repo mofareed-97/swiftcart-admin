@@ -51,8 +51,12 @@ model Category {
 
 model Order {
   id        String      @id @default(cuid())
+  cn        String      @unique
   isPaid    Boolean     @default(false)
+  status    OrderStatus @default(pending)
+  name      String      @default("")
   phone     String      @default("")
+  city      String      @default("")
   address   String      @default("")
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -64,8 +68,15 @@ model OrderItem {
   orderId   String
   order     Order   @relation(fields: [orderId], references: [id])
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([orderId])
+}
+
+enum OrderStatus {
+  pending
+  intransit
+  outfordelivery
+  delivered
 }
