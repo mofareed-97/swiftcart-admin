@@ -1,3 +1,4 @@
+import { removeModel } from "@/app/_actions/products";
 import { Payment, columns } from "./columns";
 import { DataTable } from "./data-table";
 
@@ -53,6 +54,7 @@ async function getData(): Promise<Payment[]> {
 }
 export default async function OrdersPage() {
   const data = await getData();
+  // const rmmodel = await removeModel();
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">

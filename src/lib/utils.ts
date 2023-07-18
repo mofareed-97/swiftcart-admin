@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import slugify from "slugify";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -27,4 +28,18 @@ export function isArrayOfFile(files: unknown): files is File[] {
 
 export function getRandomIntNumber() {
   return `SC${Math.floor(Math.random() * 90000) + 10000}`;
+}
+
+export function slugHandler(name: string) {
+  const slug = slugify(
+    name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .slice(0, 200)
+      .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, "")
+      .toString()
+    //Remove special characters
+  );
+
+  return slug;
 }

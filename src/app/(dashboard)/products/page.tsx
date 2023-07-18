@@ -1,3 +1,4 @@
+import { getCategories } from "@/app/_actions/products";
 import AddProduct from "@/components/form/add-product";
 import { MultiSelect } from "@/components/multi-select";
 import ProductsTable from "@/components/products/products-table";
@@ -7,11 +8,8 @@ import { GetProductsValidatorSchema } from "@/lib/validation/product";
 import { CategoryType, ProductType } from "@/types";
 
 interface IProps {
-  products: {
-    results: ProductType[];
-    totalPages: number;
-  };
-  categories: CategoryType[];
+  results: ProductType[];
+  totalPages: number;
 }
 
 interface CategoryPageProps {
@@ -38,18 +36,14 @@ async function getAllProducts(
       },
     }
   );
-  const categories = await db.category.findMany();
 
-  if (!productsResponse.ok || !categories) {
+  if (!productsResponse.ok) {
     throw new Error("Failed to fetch");
   }
 
   const productsData = await productsResponse.json();
 
-  return {
-    products: productsData,
-    categories,
-  };
+  return productsData;
 }
 
 interface ProductsParams {
@@ -60,10 +54,11 @@ export default async function ProductsPage({
   params,
   searchParams,
 }: ProductsParams) {
-  const { products, categories } = await getAllProducts({
+  const products = await getAllProducts({
     page: searchParams.page,
     categories: searchParams.categories,
   });
+  const categories = await getCategories();
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

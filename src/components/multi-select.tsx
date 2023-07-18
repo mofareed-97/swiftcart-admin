@@ -26,8 +26,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, Edit, PlusCircle } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import AddCategory from "./form/add-category";
+import UpdateCategory from "./form/update-category";
 
 export function MultiSelect({ categories }: { categories: CategoryType[] }) {
   const [open, setOpen] = React.useState(false);
@@ -94,28 +96,35 @@ export function MultiSelect({ categories }: { categories: CategoryType[] }) {
               return (
                 <CommandItem
                   key={item.id}
-                  onSelect={(currentValue) => {
-                    if (selectedCategory.includes(item.slug)) {
-                      const removeCurrentCategory = selectedCategory.filter(
-                        (cate) => cate !== item.slug
-                      );
-                      setSelectedCategory(removeCurrentCategory ?? []);
-                      return;
-                    }
-                    setSelectedCategory((prev) => [...prev, item.slug]);
-                  }}
-                  className="cursor-pointer"
+                  className=" flex items-center justify-between"
                 >
-                  <Checkbox
-                    id={item.id}
-                    checked={selectedCategory.includes(item.slug)}
-                    className="mr-2"
-                  />
+                  <div className="flex flex-1 items-center">
+                    <Checkbox
+                      onClick={() => {
+                        if (selectedCategory.includes(item.slug)) {
+                          const removeCurrentCategory = selectedCategory.filter(
+                            (cate) => cate !== item.slug
+                          );
+                          setSelectedCategory(removeCurrentCategory ?? []);
+                          return;
+                        }
+                        setSelectedCategory((prev) => [...prev, item.slug]);
+                      }}
+                      id={item.id}
+                      checked={selectedCategory.includes(item.slug)}
+                      className="mr-2"
+                    />
 
-                  {item.name}
+                    {item.name}
+                  </div>
+
+                  <UpdateCategory category={item} />
                 </CommandItem>
               );
             })}
+            <div className="border-t pt-1">
+              <AddCategory />
+            </div>
           </CommandGroup>
         </Command>
       </PopoverContent>

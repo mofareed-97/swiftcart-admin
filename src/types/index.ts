@@ -15,6 +15,13 @@ export interface CategoryType {
   id: string;
   name: string;
   slug: string;
+  categoryImage?: {
+    id: string;
+    name: string;
+    url: string;
+    categoryId: string;
+    createdAt: Date;
+  }[];
 }
 
 export interface ProductType {

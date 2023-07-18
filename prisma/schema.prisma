@@ -43,10 +43,22 @@ model Image {
 }
 
 model Category {
-  id      String    @id @default(cuid())
-  name    String
-  slug    String
-  product Product[]
+  id            String          @id @default(cuid())
+  name          String          @unique
+  slug          String          @unique
+  product       Product[]
+  categoryImage CategoryImage[]
+}
+
+model CategoryImage {
+  id         String   @id @default(cuid())
+  name       String
+  url        String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([categoryId])
 }
 
 model Order {

@@ -31,6 +31,30 @@ export const ProductValidator = z.object({
   countInStock: z.number().optional().default(1),
 });
 
+export const CategoryValidator = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  images: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      url: z.string(),
+    })
+    .array()
+    .or(
+      z
+        .any()
+        .refine((val) => {
+          if (!Array.isArray(val)) return false;
+          if (val.some((file) => !(file instanceof File))) return false;
+          return true;
+        }, "Must be an array of File")
+        .optional()
+        .nullable()
+        .default(null)
+    ),
+});
+
 export const GetProductsValidator = z.object({
   page: z.string().optional().default("1"),
   categories: z.string().optional(),
