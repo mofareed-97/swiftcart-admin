@@ -12,13 +12,24 @@ import {
 import { CalendarDateRangePicker } from "@/components/home/date-range-picker";
 import { Overview } from "@/components/home/overview";
 import { RecentSales } from "@/components/home/recent-sales";
+import { ordersAnalytic } from "../_actions/orders";
+import { LatestOrders } from "./components/LatestOrders";
+import TopSellingProducts from "./components/TopSellingProducts";
 
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Example dashboard app using the components.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const {
+    totalRevenue,
+    totalOrders,
+    completedOrders,
+    latestOrders,
+    topSellingProducts,
+  } = await ordersAnalytic();
+
   return (
     <>
       <div className="">
@@ -51,16 +62,48 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
+                {/* <div className="text-2xl font-bold">$45,231.89</div> */}
+                <div className="text-2xl font-bold">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalRevenue)}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   +20.1% from last month
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                {/* <CardTitle className="text-sm font-medium">Sales</CardTitle> */}
+                <CardTitle className="text-sm font-medium">Orders</CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <rect width="20" height="14" x="2" y="5" rx="2" />
+                  <path d="M2 10h20" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+{totalOrders}</div>
+                <p className="text-xs text-muted-foreground">
+                  +19% from last month
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Subscriptions
+                  Completed Orders
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +121,7 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+2350</div>
+                <div className="text-2xl font-bold">+{completedOrders}</div>
                 <p className="text-xs text-muted-foreground">
                   +180.1% from last month
                 </p>
@@ -86,32 +129,8 @@ export default function DashboardPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <rect width="20" height="14" x="2" y="5" rx="2" />
-                  <path d="M2 10h20" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+12,234</div>
-                <p className="text-xs text-muted-foreground">
-                  +19% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Active Now
+                  Pending Orders
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +146,9 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+573</div>
+                <div className="text-2xl font-bold">
+                  +{totalOrders - completedOrders}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   +201 since last hour
                 </p>
@@ -137,19 +158,19 @@ export default function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
               <CardHeader>
-                <CardTitle>Overview</CardTitle>
+                <CardTitle>Latest Orders</CardTitle>
               </CardHeader>
-              <CardContent className="pl-2">{/* <Overview /> */}</CardContent>
+              <CardContent className="pl-2">
+                <LatestOrders orders={latestOrders} />
+              </CardContent>
             </Card>
             <Card className="col-span-3">
               <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-                <CardDescription>
-                  You made 265 sales this month.
-                </CardDescription>
+                <CardTitle>Top Selling Products</CardTitle>
               </CardHeader>
               <CardContent>
-                <RecentSales />
+                {/* <RecentSales /> */}
+                <TopSellingProducts products={topSellingProducts} />
               </CardContent>
             </Card>
           </div>

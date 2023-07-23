@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 
 import "./globals.css";
 import { ToastProvider } from "@/components/providers/toast-provider";
@@ -20,6 +21,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning className={inter.className}>
+          <NextTopLoader />
           <ToastProvider />
           {children}
         </body>

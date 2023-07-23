@@ -3,6 +3,7 @@ import AddProduct from "@/components/form/add-product";
 import { MultiSelect } from "@/components/multi-select";
 import ProductsTable from "@/components/products/products-table";
 import TablePrdouctsPagination from "@/components/products/table-pagination";
+import { env } from "@/env.mjs";
 import { db } from "@/lib/db";
 import { GetProductsValidatorSchema } from "@/lib/validation/product";
 import { CategoryType, ProductType } from "@/types";
@@ -23,12 +24,9 @@ async function getAllProducts(
   input: GetProductsValidatorSchema
 ): Promise<IProps> {
   const productsResponse = await fetch(
-    `https://swiftcart-admin.vercel.app/api/product?page=${input.page || "1"}${
+    `${env.NEXT_PUBLIC_SERVER_URL}api/product?page=${input.page || "1"}${
       input.categories ? `&categories=${input.categories}` : ""
     }`,
-    // `http://localhost:3000/api/product?page=${input.page || "1"}${
-    //   input.categories ? `&categories=${input.categories}` : ""
-    // }`,
     {
       cache: "no-store",
       next: {

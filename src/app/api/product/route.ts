@@ -1,13 +1,18 @@
 import { db } from "@/lib/db";
 import { ProductValidator } from "@/lib/validation/product";
+import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
 
 export async function POST(req: Request) {
   const body = await req.json();
+  const { userId } = auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
-  const { name, price, images, category, countInStock, description } =
+  const { name, priceInt, images, category, countInStock, description } =
     ProductValidator.parse(body);
 
   const slug = slugify(
@@ -24,7 +29,7 @@ export async function POST(req: Request) {
       data: {
         name: name.trim(),
         description: description.trim(),
-        price,
+        priceInt,
         slug,
         categoryId: category,
         countInStock,
@@ -54,11 +59,23 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
 
+  // const { userId } = auth();
+  // console.log(userId);
+  // console.log(
+  //   "heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeey"
+  // );
+
+  // if (!userId) {
+  //   throw new Error("You must be signed in!");
+  // }
+
   const page = searchParams.get("page") || "1";
   const categories = searchParams.get("categories");
+  const price_range = searchParams.get("price_range");
   const limit = 20;
 
   const categoriesIds = categories?.split(".").map(String) ?? [];
+  const priceRangeDigit = categories?.split("-").map(String) ?? [];
 
   const count = await db.product.count();
   const totalPages = Math.ceil(count / limit);

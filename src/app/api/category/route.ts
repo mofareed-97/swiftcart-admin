@@ -1,6 +1,7 @@
 import { checkCategory } from "@/app/_actions/products";
 import { db } from "@/lib/db";
 import { CategoryValidator } from "@/lib/validation/product";
+import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 const corsHeaders = {
@@ -14,6 +15,11 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
+  const { userId } = auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   try {
     const body = await req.json();
 

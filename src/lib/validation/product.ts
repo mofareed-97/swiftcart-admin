@@ -2,10 +2,12 @@ import { z } from "zod";
 
 export const ProductValidator = z.object({
   name: z.string().min(10),
-  price: z.number().or(z.string()),
+  // priceInt: z.number().or(z.string().min(1)),
+  priceInt: z.string().transform((v) => parseInt(v)),
+  // priceInt: z.number().min(1),
   description: z.string().min(10),
   slug: z.string().optional(),
-  category: z.string(),
+  category: z.string().min(1),
   rating: z.number().optional(),
   mainImage: z.string().or(z.null()).optional(),
   images: z

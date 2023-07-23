@@ -33,6 +33,7 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import { toast } from "react-hot-toast";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { useAuth } from "@clerk/nextjs";
 
 type Inputs = z.infer<typeof ProductValidator>;
 
@@ -47,6 +48,7 @@ function AddProduct({ categories }: IProps) {
   const [isPending, startTransition] = React.useTransition();
   const [isLoading, setIsLoading] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const { userId } = useAuth();
 
   const { isUploading, startUpload } = useUploadThing("productImages");
 
@@ -56,6 +58,10 @@ function AddProduct({ categories }: IProps) {
   });
 
   function onSubmit(data: Inputs) {
+    if (!userId) {
+      toast.error("You are not authorized to update products!");
+      return;
+    }
     setIsLoading(true);
     startTransition(async () => {
       try {
@@ -71,6 +77,7 @@ function AddProduct({ categories }: IProps) {
         });
         // Add product to the store
         // await fetch("http://localhost:3000/api/product", {
+
         await fetch("api/product", {
           method: "POST",
           body: JSON.stringify({
@@ -111,7 +118,7 @@ function AddProduct({ categories }: IProps) {
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.name}
-                  placeholder="Type product name here."
+                  placeholder="Enter product name here."
                   {...form.register("name")}
                 />
               </FormControl>
@@ -123,7 +130,7 @@ function AddProduct({ categories }: IProps) {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Type product description here."
+                  placeholder="Enter product description here."
                   {...form.register("description")}
                 />
               </FormControl>
@@ -171,12 +178,13 @@ function AddProduct({ categories }: IProps) {
                 <FormLabel>Price</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Type product price here."
-                    {...form.register("price")}
+                    type="number"
+                    placeholder="Enter product price here."
+                    {...form.register("priceInt")}
                   />
                 </FormControl>
                 <UncontrolledFormMessage
-                  message={form.formState.errors.price?.message}
+                  message={form.formState.errors.priceInt?.message}
                 />
               </FormItem>
             </div>
@@ -221,13 +229,12 @@ function AddProduct({ categories }: IProps) {
               className="w-full"
               disabled={isPending || isLoading}
             >
-              {isPending ||
-                (isLoading && (
-                  <Loader2
-                    className="mr-2 h-4 w-4 animate-spin"
-                    aria-hidden="true"
-                  />
-                ))}
+              {isPending || isLoading ? (
+                <Loader2
+                  className="mr-2 h-4 w-4 animate-spin"
+                  aria-hidden="true"
+                />
+              ) : null}
               Add Product
               <span className="sr-only">Add Product</span>
             </Button>

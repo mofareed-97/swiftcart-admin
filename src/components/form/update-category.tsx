@@ -40,7 +40,6 @@ function UpdateCategory({ category }: IProps) {
 
   const { isUploading, startUpload } = useUploadThing("productImages");
 
-  console.log(category);
   React.useEffect(() => {
     if (category.categoryImage && category.categoryImage.length > 0) {
       setFiles(

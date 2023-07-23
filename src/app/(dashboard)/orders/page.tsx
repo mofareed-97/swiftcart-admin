@@ -1,60 +1,45 @@
-import { removeModel } from "@/app/_actions/products";
-import { Payment, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { OrderType } from "@/types";
+import { DataTable } from "@/components/orders-table/data-table";
+import { env } from "@/env.mjs";
+import { GetOrdersValidatorSchema } from "@/lib/validation/orders";
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "m5gr84i9",
-      amount: 316,
-      name: "Mohamed",
-      status: "success",
-      email: "ken99@yahoo.com",
-      isPaid: true,
-      qty: 3,
-    },
-    {
-      id: "3u1reuv4",
-      name: "Ahmed",
-      amount: 242,
-      status: "success",
-      email: "Abe45@gmail.com",
-      isPaid: true,
-      qty: 6,
-    },
-    {
-      id: "derv1ws0",
-      name: "Khalied",
-      amount: 837,
-      status: "processing",
-      email: "Monserrat44@gmail.com",
-      isPaid: false,
-      qty: 1,
-    },
-    {
-      id: "5kma53ae",
-      name: "Mohamed",
-      amount: 874,
-      status: "success",
-      email: "Silas22@gmail.com",
-      isPaid: true,
-      qty: 1,
-    },
-    {
-      id: "bhqecj4p",
-      name: "Ryan",
-      amount: 721,
-      status: "failed",
-      email: "carmella@hotmail.com",
-      isPaid: false,
-      qty: 2,
-    },
-  ];
+export const revalidate = 0;
+
+interface OrdersResultFetchType {
+  totalPages: number;
+  results: OrderType[];
 }
-export default async function OrdersPage() {
-  const data = await getData();
-  // const rmmodel = await removeModel();
+async function getData(
+  input: GetOrdersValidatorSchema
+): Promise<OrdersResultFetchType> {
+  // Fetch data from your API here.
+  const response = await fetch(
+    `${env.NEXT_PUBLIC_SERVER_URL}/api/orders?page=${input.page || "1"}${
+      input.cn ? `&cn=${input.cn}` : ""
+    }`
+  );
+
+  if (!response.ok) {
+    throw new Error("Something went wrong");
+  }
+
+  const data = await response.json();
+
+  return data;
+}
+
+interface OrdersParams {
+  params: any;
+  searchParams: GetOrdersValidatorSchema;
+}
+export default async function OrdersPage({
+  params,
+  searchParams,
+}: OrdersParams) {
+  const data = await getData({
+    page: searchParams.page,
+    cn: searchParams.cn,
+  });
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -62,7 +47,7 @@ export default async function OrdersPage() {
         <div className="flex items-center space-x-2"></div>
       </div>
       <div className="">
-        <DataTable columns={columns} data={data} />
+        <DataTable data={data.results} />
       </div>
     </div>
   );

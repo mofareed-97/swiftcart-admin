@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { getRandomIntNumber } from "@/lib/utils";
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
 interface CustomerOrderType {
   id: string;
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
         cn: referenceNumber,
         orderItem: {
           create: data.map((item) => ({
+            qty: item.qty,
             product: {
               connect: {
                 id: item.id,
@@ -67,18 +69,24 @@ export async function POST(req: Request) {
       },
     });
 
-    const session = await stripe.checkout.sessions.create({
-      line_items: addQtyProducts.map((item) => ({
-        mode: "payment",
-        quantity: item.qty,
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+    addQtyProducts.forEach((product) => {
+      line_items.push({
+        quantity: product.qty,
         price_data: {
-          currency: "usd",
+          currency: "USD",
           product_data: {
-            name: item.name,
+            name: product.name,
           },
-          unit_amount: item.price.toNumber() * 100,
+          unit_amount: product.priceInt * 100,
         },
-      })),
+      });
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      line_items,
+      mode: "payment",
       billing_address_collection: "required",
       phone_number_collection: {
         enabled: true,
@@ -101,12 +109,19 @@ export async function POST(req: Request) {
           countInStock: {
             decrement: product.qty,
           },
+          sales: {
+            increment: 1,
+          },
         },
       });
     });
 
-    return new NextResponse(session.url, { status: 303 });
+    return new NextResponse(JSON.stringify({ url: session.url }), {
+      status: 303,
+      headers: corsHeaders,
+    });
   } catch (error: any) {
+    console.log(error.message);
     return new NextResponse(error.message, { status: 500 });
   }
 }

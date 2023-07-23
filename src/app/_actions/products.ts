@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { CategoryType } from "@/types";
+import { CategoryType, OrderType } from "@/types";
 
 export async function checkCategory({
   name,
@@ -47,5 +47,6 @@ export async function getCategories(): Promise<CategoryType[]> {
 }
 
 export async function removeModel() {
-  await db.categoryImage.deleteMany({});
+  await db.orderItem.deleteMany();
+  await db.order.deleteMany();
 }

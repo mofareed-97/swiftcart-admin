@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { ProductValidator } from "@/lib/validation/product";
 import { StoredFile } from "@/types";
+import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
@@ -50,10 +51,14 @@ export async function GET(req: Request, { params }: ProductParamsType) {
 export async function PATCH(req: Request, { params }: ProductParamsType) {
   const body = await req.json();
 
+  const { userId } = auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   //   const { name, price, images, category, countInStock, description } =
   const {
     name,
-    price,
+    priceInt,
     images,
     category,
     countInStock,
@@ -101,7 +106,7 @@ export async function PATCH(req: Request, { params }: ProductParamsType) {
         data: {
           name,
           description,
-          price,
+          priceInt,
           slug,
           categoryId: category,
           countInStock,
@@ -126,7 +131,7 @@ export async function PATCH(req: Request, { params }: ProductParamsType) {
       data: {
         name,
         description,
-        price,
+        priceInt,
         slug,
         categoryId: category,
         countInStock,

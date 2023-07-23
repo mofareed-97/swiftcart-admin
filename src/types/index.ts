@@ -29,7 +29,8 @@ export interface ProductType {
   name: string;
   description: string;
   slug: string;
-  price: number;
+  price: string;
+  priceInt: number;
   images: StoredFile[];
   mainImage: string | null;
   createdAt: Date;
@@ -39,4 +40,33 @@ export interface ProductType {
   category: CategoryType;
 }
 
+export interface OrderType {
+  id: string;
+  cn: string;
+  isPaid: boolean;
+  status: "pending" | "intransit" | "outfordelivery" | "delivered";
+  name: string;
+  phone: string;
+  city: string;
+  address: string;
+  createdAt: Date;
+  updatedAt: Date;
+  orderItem: OrderItemType[];
+}
+
+export interface OrderItemType {
+  id: string;
+  orderId: string;
+  productId: string;
+  qty: number;
+  product: ProductType;
+}
+
 export type UserRole = "user" | "admin";
+
+export enum StatusEnum {
+  pending,
+  intransit,
+  outfordelivery,
+  delivered,
+}

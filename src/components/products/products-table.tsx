@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Table,
@@ -64,7 +65,7 @@ function ProductsTable({ products, categories }: IProps) {
               <TableCell className="">
                 {format(new Date(product.createdAt), "LLL dd, y")}
               </TableCell>
-              <TableCell className="">${product.price}</TableCell>
+              <TableCell className="">${product.priceInt}</TableCell>
               <TableCell className="">
                 {product.sales ? product.sales : "Not Available"}
               </TableCell>

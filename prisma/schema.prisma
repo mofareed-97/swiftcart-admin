@@ -9,35 +9,35 @@ datasource db {
 }
 
 model Product {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  name         String   @db.Text
-  price        Decimal
-  rating       Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  description  String   @db.Text
-  mainImage    String?
-  images       Image[]
+  id           String      @id @default(cuid())
+  slug         String      @unique
+  name         String      @db.Text
+  price        Decimal?
+  priceInt     Int         @default(0)
+  rating       Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  description  String      @db.Text
   countInStock Int
-  likes        Int      @default(0)
-  sales        Int      @default(0)
-
-  categoryId String
-  category   Category    @relation(fields: [categoryId], references: [id])
-  orderItem  OrderItem[]
+  categoryId   String
+  likes        Int         @default(0)
+  mainImage    String?
+  sales        Int         @default(0)
+  images       Image[]
+  category     Category    @relation(fields: [categoryId], references: [id])
+  orderItem    OrderItem[]
 
   @@index([categoryId])
 }
 
 model Image {
   id        String   @id @default(cuid())
-  name      String
   url       String
   productId String
+  createdAt DateTime @default(now())
+  name      String
   mainImage Boolean  @default(false)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
 
   @@index([productId])
 }
@@ -55,32 +55,33 @@ model CategoryImage {
   name       String
   url        String
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([categoryId])
 }
 
 model Order {
   id        String      @id @default(cuid())
-  cn        String      @unique
   isPaid    Boolean     @default(false)
-  status    OrderStatus @default(pending)
-  name      String      @default("")
   phone     String      @default("")
-  city      String      @default("")
   address   String      @default("")
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  name      String      @default("")
+  status    OrderStatus @default(pending)
+  cn        String      @unique
+  city      String      @default("")
   orderItem OrderItem[]
 }
 
 model OrderItem {
   id        String  @id @default(uuid())
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
   productId String
+  order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  qty       Int     @default(0)
 
   @@index([productId])
   @@index([orderId])

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { slugHandler } from "@/lib/utils";
 import { CategoryValidator } from "@/lib/validation/product";
+import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { utapi } from "uploadthing/server";
 
@@ -45,6 +46,11 @@ export async function GET(req: Request, { params }: CategoryParamsType) {
 }
 
 export async function DELETE(req: Request, { params }: CategoryParamsType) {
+  const { userId } = auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   try {
     const category = await db.category.findFirst({
       where: {
@@ -90,8 +96,12 @@ export async function DELETE(req: Request, { params }: CategoryParamsType) {
 }
 
 export async function PATCH(req: Request, { params }: CategoryParamsType) {
-  const body = await req.json();
+  const { userId } = auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
+  const body = await req.json();
   const { name, images } = CategoryValidator.parse(body);
 
   try {
@@ -153,7 +163,6 @@ export async function PATCH(req: Request, { params }: CategoryParamsType) {
       },
     });
 
-    console.log(updatedCategory);
     return NextResponse.json(
       {
         status: "success",

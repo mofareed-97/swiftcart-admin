@@ -33,6 +33,7 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import { toast } from "react-hot-toast";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { useAuth } from "@clerk/nextjs";
 
 type Inputs = z.infer<typeof ProductValidator>;
 
@@ -48,6 +49,8 @@ function EditProduct({ product, categories }: IProps) {
   const [isPending, startTransition] = React.useTransition();
   const [isLoading, setIsLoading] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
+
+  const { userId } = useAuth();
 
   const { isUploading, startUpload } = useUploadThing("productImages");
   const [newMainImage, setNewMainImage] = React.useState(
@@ -80,6 +83,10 @@ function EditProduct({ product, categories }: IProps) {
   });
 
   function onSubmit(data: Inputs) {
+    if (!userId) {
+      toast.error("You are not authorized to update products!");
+      return;
+    }
     setIsLoading(true);
     startTransition(async () => {
       try {
@@ -202,11 +209,11 @@ function EditProduct({ product, categories }: IProps) {
                 <FormControl>
                   <Input
                     placeholder="Type product price here."
-                    {...form.register("price")}
+                    {...form.register("priceInt")}
                   />
                 </FormControl>
                 <UncontrolledFormMessage
-                  message={form.formState.errors.price?.message}
+                  message={form.formState.errors.priceInt?.message}
                 />
               </FormItem>
             </div>
@@ -254,13 +261,12 @@ function EditProduct({ product, categories }: IProps) {
               className="w-full bg-orange-400"
               disabled={isPending || isLoading}
             >
-              {isPending ||
-                (isLoading && (
-                  <Loader2
-                    className="mr-2 h-4 w-4 animate-spin"
-                    aria-hidden="true"
-                  />
-                ))}
+              {isPending || isLoading ? (
+                <Loader2
+                  className="mr-2 h-4 w-4 animate-spin"
+                  aria-hidden="true"
+                />
+              ) : null}
               Update Product
               <span className="sr-only">Update Product</span>
             </Button>
